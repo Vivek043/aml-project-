@@ -1,17 +1,20 @@
-# dashboard/app.py
 import streamlit as st
 import pandas as pd
 
-st.title("AML: Flagged Transactions")
-df = pd.read_csv("data/risk_scored_transactions.csv")
-flags = df[df["risk_score"] >= 80].sort_values("risk_score", ascending=False)
+st.title("🚨 AML Suspicious Transaction Monitor")
 
-st.metric("Total transactions", len(df))
-st.metric("Flagged (risk ≥ 80)", len(flags))
+# Load data
+df = pd.read_csv("data/transactions_sample.csv", parse_dates=["timestamp"])
 
-st.dataframe(flags[[
-    "transaction_id","customer_id","amount","country",
-    "risk_score","reason","timestamp","source_account","dest_account"
-]])
-df = pd.read_csv("data/transactions_sample.csv")
+# Simple rule: flag if amount > 10,000
+df["risk_score"] = df["amount"].apply(lambda x: 90 if x > 10000 else 20)
+df["reason"] = df["amount"].apply(lambda x: "High amount transaction" if x > 10000 else "Normal")
 
+# Show summary
+st.metric("Total Transactions", len(df))
+st.metric("Flagged Transactions", (df["risk_score"] >= 80).sum())
+
+# Show flagged
+flagged = df[df["risk_score"] >= 80]
+st.subheader("Flagged Transactions")
+st.dataframe(flagged[["transaction_id","customer_id","amount","country","risk_score","reason"]])
