@@ -8,7 +8,7 @@ st.title("🚨 AML Suspicious Transaction Monitor")
 df = pd.read_csv("data/transactions_sample.csv")
 
 # --- CONFIG ---
-USE_API = False  # set to True once your FastAPI service is deployed
+USE_API = True # set to True once your FastAPI service is deployed
 API_URL = "https://your-api.onrender.com/score"
 
 # --- SCORING LOGIC ---
