@@ -1,20 +1,23 @@
 import streamlit as st
 import pandas as pd
+import requests
 
 st.title("🚨 AML Suspicious Transaction Monitor")
 
-# Load data
-df = pd.read_csv("data/transactions_sample.csv", parse_dates=["timestamp"])
+# Load sample data
+df = pd.read_csv("data/transactions_sample.csv")
 
-# Simple rule: flag if amount > 10,000
-df["risk_score"] = df["amount"].apply(lambda x: 90 if x > 10000 else 20)
-df["reason"] = df["amount"].apply(lambda x: "High amount transaction" if x > 10000 else "Normal")
+# Call API for scoring
+results = []
+for _, row in df.iterrows():
+    txn = row.to_dict()
+    r = requests.post("https://aml-project-8y05.onrender.com/", json=txn)
+    results.append(r.json())
 
-# Show summary
-st.metric("Total Transactions", len(df))
-st.metric("Flagged Transactions", (df["risk_score"] >= 80).sum())
+scored_df = pd.DataFrame(results)
 
-# Show flagged
-flagged = df[df["risk_score"] >= 80]
+st.metric("Total Transactions", len(scored_df))
+st.metric("Flagged Transactions", (scored_df["risk_score"] >= 80).sum())
+
 st.subheader("Flagged Transactions")
-st.dataframe(flagged[["transaction_id","customer_id","amount","country","risk_score","reason"]])
+st.dataframe(scored_df[scored_df["risk_score"] >= 80])
