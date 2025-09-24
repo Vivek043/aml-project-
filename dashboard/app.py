@@ -13,4 +13,5 @@ st.dataframe(flags[[
     "transaction_id","customer_id","amount","country",
     "risk_score","reason","timestamp","source_account","dest_account"
 ]])
-df = pd.read_csv("transactions_sample.csv")
+df = pd.read_csv("data/transactions_sample.csv")
+
