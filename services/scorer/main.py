@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict
 from scoring_rules import score_transaction
+from services.scorer.scoring_rules import score_transaction
+
 
 app = FastAPI(title="Transaction Scoring Service")
 
